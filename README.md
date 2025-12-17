@@ -1,2 +1,2 @@
-Light Intensity Measuring Device 
+LUX Measuring Device 
 STM32 Bare metal
