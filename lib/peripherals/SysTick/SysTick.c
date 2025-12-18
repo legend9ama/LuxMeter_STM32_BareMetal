@@ -1,14 +1,23 @@
 #include "SysTick.h"
 
-void SysTick_Init(void);
+static volatile uint32_t ms_ticks = 0;
+
+void SysTick_Init(void) {
+    if(SysTick_Config(SystemCoreClock/1000)){
+        while(1);
+    }
+    NVIC_SetPriority(SysTick_IRQn, (1UL << __NVIC_PRIO_BITS) - 1UL);
+}
+
+void SysTick_Handler(void) {
+    ms_ticks++;
+}
 
 void SysTickDelayMS(volatile uint32_t delay) {
-    SysTick->LOAD = CYCLE_PER_MS - 1;
-    SysTick->VAL = 0;
-    SysTick->CTRL = SysTick_CTRL_ENABLE_Msk | SysTick_CTRL_CLKSOURCE_Msk;
+    uint32_t start = ms_ticks;
+    while((ms_ticks-start) < delay){}
+}
 
-    for(int i = 0; i < delay; i++){
-        while((SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk) == 0){}
-    }
-    SysTick->CTRL = 0;
+uint32_t GetTick(void) {
+    return ms_ticks;
 }

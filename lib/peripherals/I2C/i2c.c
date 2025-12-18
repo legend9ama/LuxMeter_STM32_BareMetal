@@ -14,7 +14,7 @@ void I2C1_Init(void) {
 
     I2C1->CR1 &= ~I2C_CR1_PE;
     
-    I2C1->TIMINGR = 0x0010020A; 
+    I2C1->TIMINGR = 0x00901850; 
     
     I2C1->CR1 |= I2C_CR1_PE;
 }
