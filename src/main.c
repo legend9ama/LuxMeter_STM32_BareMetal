@@ -3,12 +3,13 @@
 // Peripherals
 #include "GPIO/gpio.h"
 #include "I2C/i2c.h"
+#include "ADC/adc.h"
 #include "RCC/rcc.h"
 #include "SysTick/SysTick.h"
 //Modules
 #include "BH1750/bh1750.h"
 #include "OLED/ssd1306.h"
-
+#include "PWR/pwr.h"
 
 volatile float lux = 0.0;
 volatile uint16_t raw_data = 0;
@@ -19,6 +20,7 @@ int main(void) {
 
     GPIO_Init();
     I2C1_Init();
+    ADC_Init();
     SysTickDelayMS(100);
 
     SSD1306_Init();
@@ -33,19 +35,28 @@ int main(void) {
     SysTickDelayMS(180);
 
     char msg[16];
+    char batt_msg[16];
     int prev_lux = -1;
+    uint8_t batt_pct = 0;
 
     while (1) {
         raw_data = BH1750_Read();
         lux = (float)raw_data / 1.2f;
-
+        batt_pct = Get_Battery_Percentage();
+        
         int whole_lux = (int)lux;
         int dec_lux = (int)((lux-whole_lux) * 10);
         if (dec_lux < 0) dec_lux = -dec_lux;
+
         if(whole_lux != prev_lux){
             SSD1306_Fill(0);
+            
+            sprintf(batt_msg, "Batt: %d%%", batt_pct);
+            SSD1306_DrawString(batt_msg, 70, 0, 1);
+
             sprintf(msg, "Lux: %d.%d", whole_lux, dec_lux);
             SSD1306_DrawString(msg, 5, 25, 1);
+            
             SSD1306_UpdateScreen();
 
             prev_lux = whole_lux;
