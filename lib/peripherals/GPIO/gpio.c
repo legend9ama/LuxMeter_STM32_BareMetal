@@ -13,7 +13,7 @@ void GPIO_Init(void) {
     // SET MODE FOR PINS PA
     GPIOA->MODER |= ((3U) | (1U << 2) | (1U << 4) | (1U << 6) |
                     (1U << 8) | (2U << 10) | (2U << 12) | 
-                    (1U << 14) | (2U << 18) | (2U << 20));
+                    (2U << 14) | (2U << 18) | (2U << 20));
     // CLEAR AND SET PB1 TO OUTPUT
     GPIOB->MODER &= ~(3U << 2);
     GPIOB->MODER |= (1U << 2);
